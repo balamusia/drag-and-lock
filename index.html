@@ -1,0 +1,92 @@
+<body>
+
+<div id="draggable" style="position: absolute; top: 50px; left: 50px; width: 100px; height: 100px; background-color: red;"></div>
+<div id="blue" style="position: absolute; top: 150px; left: 150px; width: 50px; height: 50px; background-color: blue;"></div>
+<div id="green" style="position: absolute; top: 200px; left: 200px; width: 50px; height: 50px; background-color: green;"></div>
+
+
+</body>
+
+<script>
+
+const draggable = document.getElementById('draggable');
+const greenElement = document.getElementById('green');
+const blueElement = document.getElementById('blue');
+let isDragging = false;
+let mouseDownX = 0;
+let mouseDownY = 0;
+let offsetX = 0;
+let offsetY = 0;
+let prevX = 0;
+let prevY = 0;
+let deltaX = 0;
+let deltaY = 0;
+
+// Set initial position of green and blue elements
+greenElement.style.top = `${draggable.offsetTop - 50}px`;
+blueElement.style.top = `${draggable.offsetTop + draggable.offsetHeight + 10}px`;
+
+draggable.addEventListener('mousedown', function(e) {
+  isDragging = true;
+  mouseDownX = e.clientX;
+  mouseDownY = e.clientY;
+  offsetX = draggable.offsetLeft;
+  offsetY = draggable.offsetTop;
+  prevX = e.clientX;
+  prevY = e.clientY;
+});
+
+document.addEventListener('mousemove', function(e) {
+  if (isDragging) {
+    deltaX = e.clientX - prevX;
+    deltaY = e.clientY - prevY;
+    prevX = e.clientX;
+    prevY = e.clientY;
+    let newLeft = offsetX + e.clientX - mouseDownX;
+    let newTop = offsetY + e.clientY - mouseDownY;
+
+    // Constrain movement within 20 pixels of the draggable element
+    if (Math.abs(newLeft - draggable.offsetLeft) > 20) {
+      newLeft = draggable.offsetLeft + (newLeft > draggable.offsetLeft ? 20 : -20);
+    }
+    if (Math.abs(newTop - draggable.offsetTop) > 20) {
+      newTop = draggable.offsetTop + (newTop > draggable.offsetTop ? 20 : -20);
+    }
+
+    draggable.style.left = `${newLeft}px`;
+    draggable.style.top = `${newTop}px`;
+
+    // Move green element slightly above draggable element
+    greenElement.style.top = `${draggable.offsetTop - 50}px`;
+
+    // Move blue element slightly below draggable element
+    blueElement.style.top = `${draggable.offsetTop + draggable.offsetHeight + 10}px`;
+
+    const moveables = document.querySelectorAll('.moveable');
+    for (let i = 0; i < moveables.length; i++) {
+      const moveable = moveables[i];
+      let newMoveableLeft = parseFloat(moveable.style.left) + deltaX;
+      let newMoveableTop = parseFloat(moveable.style.top) + deltaY;
+
+      // Constrain movement within 20 pixels of the draggable element
+      if (Math.abs(newMoveableLeft - draggable.offsetLeft) > 20) {
+        newMoveableLeft = draggable.offsetLeft + (newMoveableLeft > draggable.offsetLeft ? 20 : -20);
+      }
+      if (Math.abs(newMoveableTop - draggable.offsetTop) > 20) {
+        newMoveableTop = draggable.offsetTop + (newMoveableTop > draggable.offsetTop ? 20 : -20);
+      }
+
+      moveable.style.left = `${newMoveableLeft}px`;
+      moveable.style.top = `${newMoveableTop}px`;
+    }
+  }
+});
+
+document.addEventListener('mouseup', function(e) {
+  isDragging = false;
+});
+
+
+
+
+</script>
